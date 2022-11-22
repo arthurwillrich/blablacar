@@ -7,7 +7,7 @@ class FiniteAutomata:
     def __init__(self):
         self.initial_state = State()
         self.states = {self.initial_state}
-        self.alphabet = list()
+        self.alphabet = set()
         self.transitions = dict()
         self.final_states = set()
         self.symbol_table = list()
