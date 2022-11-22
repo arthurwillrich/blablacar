@@ -1,0 +1,15 @@
+#states
+p
+q
+r
+#initial
+p
+#final
+r
+#transitions
+p & -> p q
+p b -> q
+p c -> r
+q a -> p
+q b -> r
+q c -> p q
