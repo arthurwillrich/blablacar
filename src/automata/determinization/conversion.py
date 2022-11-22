@@ -2,7 +2,6 @@ from src.automata.structures.fa import FiniteAutomata
 from src.automata.persistency.reader import read_fa_from
 from src import resource_dir
 from src.automata.structures.state import State
-from src.automata.persistency.writer import write
 
 
 def determinize(nfa) -> FiniteAutomata:
@@ -12,24 +11,29 @@ def determinize(nfa) -> FiniteAutomata:
 
     result.initial_state = closured_states[nfa.initial_state]
     result.states = {result.initial_state}
+    result.alphabet = nfa.alphabet
 
     stack = {closured_states[nfa.initial_state]}
 
     while stack:
         top = stack.pop()
 
-        for pair, arrival in transitions_for(nfa, top).items():
+        for pair, arrival in __transitions_for(nfa, top).items():
+            if closured_states.get(arrival):  # If it has an entry, needs to be changed by its own closure.
+                arrival = closured_states[arrival]
+
             if pair not in result.transitions.keys():
                 result.transitions[pair] = {arrival}
                 result.states |= {arrival}
                 stack.add(arrival)
 
-    result.final_states = finals(nfa.final_states, result.states)
-    remove_useless_states_from(result)
+    result.final_states = __finals(nfa.final_states, result.states)
+    __remove_useless_states_from(result)
+
     return result
 
 
-def finals(old_finals: set, all_states: set) -> set:
+def __finals(old_finals: set, all_states: set) -> set:
     final_states = set()
 
     for oldie in old_finals:
@@ -40,7 +44,7 @@ def finals(old_finals: set, all_states: set) -> set:
     return final_states
 
 
-def remove_useless_states_from(automata: FiniteAutomata):
+def __remove_useless_states_from(automata: FiniteAutomata):
     """Removes empty transitions and states without labels
     from the :param automata."""
     copy = dict(automata.transitions)
@@ -61,13 +65,13 @@ def closure_states_for(nfa: FiniteAutomata) -> dict:
     epsilon_closure: dict = epsilon_closure_from(nfa)
 
     for src, dst in epsilon_closure.items():
-        state = squash(dst)
+        state = __squash(dst)
         closure_states[src] = state
 
     return closure_states
 
 
-def squash(states: set) -> State:
+def __squash(states: set) -> State:
     """Digests a :param state set: into a single :return state."""
     label = sorted([state.label for state in states])
     squashed = ''.join(label)
@@ -103,7 +107,7 @@ def empty_transitions_from(nfa):
     return empty_transitions
 
 
-def transitions_for(nfa, state: State) -> dict:
+def __transitions_for(nfa, state: State) -> dict:
     """Gathers every possible transition from a :param state
     in the given :param nfa."""
     transitions = dict()
@@ -118,17 +122,14 @@ def transitions_for(nfa, state: State) -> dict:
                 if src_state == State(label) and symbol == s:
                     new_destiny |= arrival
 
-        transitions[(state, s)] = squash(new_destiny)
+        transitions[(state, s)] = __squash(new_destiny)
 
     return transitions
 
 
 if __name__ == '__main__':
+    stub = read_fa_from(resource_dir / 'stub.txt')
 
-    fa = read_fa_from(resource_dir / 'stub.txt')
-    # print(fa)
-    # automato = new_read_fa_from(resource_dir / 'afnd1.txt')
-
-    fa = determinize(fa)
-    print(fa)
-    write(fa)
+    print(stub)
+    stub = determinize(stub)
+    print(stub)
