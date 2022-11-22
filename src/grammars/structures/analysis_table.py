@@ -1,9 +1,9 @@
 import copy
 
-from src.automata.structures.state import State
+#from src.automata.structures.state import State
 from prettytable import PrettyTable
 #from src.grammars.persistency.reader import read_grammar_from
-from src.grammars.persistency.reader import read_grammar_from
+from src.grammars.persistency.reader import read_grammar_from, new_read_grammar_from
 from src.grammars.structures.cfg import ContextFreeGrammar
 
 class AnalysisTableContrcutor:
@@ -156,7 +156,7 @@ class AnalysisTableContrcutor:
 
 
 if __name__ == '__main__':
-    read_grammar = read_grammar_from('grammar.txt')
+    read_grammar = new_read_grammar_from('gramatica.txt')
     analysisTable = AnalysisTableContrcutor(read_grammar)
     analysisTable.generate_table()
     analysisTable.run_analysis("ivi^i")

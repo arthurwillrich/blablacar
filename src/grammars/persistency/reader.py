@@ -2,6 +2,34 @@ from src import resource_dir
 from src.grammars.structures.cfg import ContextFreeGrammar
 
 
+def new_read_grammar_from(filepath) -> ContextFreeGrammar:
+    with open(resource_dir / filepath, 'r') as f:
+        lines = f.readlines()
+        trimmed = [line.rstrip() for line in lines]
+
+        nt_set = set()
+        t_set = set()
+        p_set = set()
+        start = ""
+
+        end_product = []
+        for productions in trimmed:
+            split_productions = productions.split("->")
+            end_product.append(split_productions[1].strip())
+            nt_set.add(split_productions[0].strip())
+            if start == "":
+                start = split_productions[0].strip()
+
+        for product in end_product:
+            aux = product.split("|")
+            for a in aux:
+                for char in list(a):
+                    if char not in nt_set and char != "'" and char != " ":
+                        t_set.add(char)
+        p_set = __digest_productions_from(trimmed)
+
+        return ContextFreeGrammar(nt_set, t_set, p_set, start)
+
 def read_grammar_from(filepath) -> ContextFreeGrammar:
     with open(resource_dir / filepath, 'r') as f:
         lines = f.readlines()
@@ -12,6 +40,8 @@ def read_grammar_from(filepath) -> ContextFreeGrammar:
     non_terminals = __non_terminals_from(trimmed)
     terminals = __terminals_from(trimmed)
     productions = __digest_productions_from(trimmed)
+
+    print(productions)
 
     return ContextFreeGrammar(non_terminals, terminals, productions, start)
 
@@ -31,7 +61,7 @@ def __terminals_from(lines):
 def __digest_productions_from(lines):
     productions = dict()
 
-    for production in lines[lines.index('#productions') + 1:]:
+    for production in lines:
         line_without_arrow = production.split('->')
         non_terminal = line_without_arrow[0].replace(' ', '')  # Expected to always be non-terminal.
         digested_line = __eat(''.join(line_without_arrow[1:]).split('|'))
