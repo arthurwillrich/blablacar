@@ -1,10 +1,9 @@
-# babelpy
-A JFlap-like software for analysing regex and generating their finite automata.
+# blablacar
+Trabalho para a disciplina de Linguagens Formais e Compiladores
 
-## First steps
+## Primeiros passos
 
-For using `babelpy`, you will need `Python3.10`
-and a package named `PrettyTable.`
+Para utilização do blablacar, é nescessária a versão do Python 3.10 ou superior e a biblioteca "PrettyTable"
 
 1. `Python3.10`
 
@@ -15,8 +14,7 @@ and a package named `PrettyTable.`
 
 2. `PrettyTable`
 
-For `PrettyTable` installation, you will need a `pip` compatible
-version with `Python3.10`.
+Para instalar a `PrettyTable`, você precisa que a versão do`pip` seja compatível com `Python3.10`.
 
 `sudo apt install python3.10-distutils`\
 `python3.10 -m pip install -U prettytable`
@@ -77,28 +75,20 @@ its `write(FiniteAutomata)` function.
 An automata can be retrived from a file with
 contents like this:
 
-> #states\
-q0\
-q1\
-q2\
-q3\
-q4\
-#initial\
-q0\
-#final\
-q1\
-q2\
-#transitions\
-q0 0 -> q1 q2\
-q0 1 -> q2\
-q1 0 -> q1\
-q1 1 -> q3\
-q2 0 -> q4\
-q2 1 -> q1\
-q3 0 -> q1\
-q3 1 -> q3\
-q4 0 -> q4\
-q4 1 -> q3
+5
+0
+1,2
+a,b
+0,a,1
+0,b,2
+1,a,1
+1,b,3
+2,a,4
+2,b,2
+3,a,1
+3,b,3
+4,a,4
+4,b,2
 
 It **must** have its contents divided in 4 sections:
 
