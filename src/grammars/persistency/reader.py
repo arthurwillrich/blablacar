@@ -30,6 +30,7 @@ def new_read_grammar_from(filepath) -> ContextFreeGrammar:
 
         return ContextFreeGrammar(nt_set, t_set, p_set, start)
 
+
 def read_grammar_from(filepath) -> ContextFreeGrammar:
     with open(resource_dir / filepath, 'r') as f:
         lines = f.readlines()
