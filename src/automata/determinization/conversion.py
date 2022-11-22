@@ -1,5 +1,5 @@
 from src.automata.structures.fa import FiniteAutomata
-from src.automata.persistency.reader import read_fa_from, new_read_fa_from
+from src.automata.persistency.reader import read_fa_from
 from src import resource_dir
 from src.automata.structures.state import State
 from src.automata.persistency.writer import write
@@ -75,17 +75,17 @@ def squash(states: set) -> State:
 
 
 def epsilon_closure_from(nfa: FiniteAutomata) -> dict:
-    stack = [s for s in nfa.states]
+    stack = [state for state in nfa.states]
 
     epsilon_closure = {state: {state} for state in nfa.states}
     empty_transitions = empty_transitions_from(nfa)
 
     while stack:
-        top = stack.pop()
+        top = stack.pop(0)
 
         for state in empty_transitions[top]:
             if state not in epsilon_closure[top]:
-                epsilon_closure[top] |= {state}
+                epsilon_closure[top] |= epsilon_closure[state]
                 stack.append(state)
 
     return epsilon_closure
@@ -125,14 +125,10 @@ def transitions_for(nfa, state: State) -> dict:
 
 if __name__ == '__main__':
 
-    fa = read_fa_from(resource_dir / 'simple_nfa.txt')
-    automato = new_read_fa_from(resource_dir / 'afnd1.txt')
+    fa = read_fa_from(resource_dir / 'stub.txt')
+    # print(fa)
+    # automato = new_read_fa_from(resource_dir / 'afnd1.txt')
 
-
-
-    #print(fa)
-    print(automato)
-    #
-    fa = determinize(automato)
-    #
+    fa = determinize(fa)
+    print(fa)
     write(fa)
