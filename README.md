@@ -19,7 +19,7 @@ Para instalar a `PrettyTable`, você precisa que a versão do`pip` seja compatí
 `sudo apt install python3.10-distutils`\
 `python3.10 -m pip install -U prettytable`
 
-## How does it work?
+## How does it work? DAQUI PRA BAIXO PRECISA MUDAR ======================
 
 The code will, indeed, look a lot more like
 a lib than an application. Due to the fact
