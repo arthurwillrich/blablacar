@@ -1,0 +1,18 @@
+#start
+S
+#non-terminals
+S
+A
+B
+C
+#terminals
+a
+b
+c
+d
+&
+#productions
+S -> ABC
+A -> aA | &
+B -> bB | ACd
+C -> cC | &
