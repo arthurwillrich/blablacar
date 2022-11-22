@@ -29,6 +29,7 @@ def new_read_fa_from(filepath: str) -> FiniteAutomata:
         fa.transitions[(src, input_symbol)] = dst
     return fa
 
+
 def read_fa_from(filepath: str) -> FiniteAutomata:
     with open(resource_dir / filepath) as f:
         raw_fa = list(f)
@@ -51,11 +52,8 @@ def read_fa_from(filepath: str) -> FiniteAutomata:
         src = __state_cache[digested_line[0]]
         input_symbol = digested_line[1]
         dst = search_states(digested_line[3:])
-        # print('src = ', src)
-        # print('input_symbol = ', input_symbol)
-        # print('dst = ', dst)
 
-
+        fa.alphabet |= {input_symbol}
         fa.transitions[(src, input_symbol)] = dst
 
     return fa
