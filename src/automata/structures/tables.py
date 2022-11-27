@@ -1,6 +1,8 @@
 from prettytable import PrettyTable
 from src.automata.persistency.reader import read_fa_from
 
+#Tabela de simbolos - Tem que arrumar
+
 class Env:
 
     def __init__(self):
@@ -23,15 +25,15 @@ if __name__ == '__main__':
     rw_file = open('reserved_words.txt', 'r')
     rw_read = rw_file.readlines()
     reservedTerms = []
+    entry = []
     for line in rw_read:
         reservedTerms.append(line[:-1])
 
     entry_file = open('entry.txt', 'r')
 
-    entry_read = entry_file.readlines()
-    entry = []
-    for word in entry_read:
-        entry.append(word[:-1])
+    for line in entry_file:
+        for word in line.split():
+            entry.append(word)
 
     tables = Env()
 
@@ -40,11 +42,22 @@ if __name__ == '__main__':
     tl = PrettyTable()
     tl.field_names = ["Token List"]
 
+    place = 0
+
     for word in entry:
-        if (word not in reservedTerms):
-            index = tables.putST(word)
-            tables.putTL(["id", index])
+        contains = False
+        for terms in reservedTerms:
+            reserved = terms.split()
+            for words in reserved:
+                if word in words:
+                    contains = True
+                    classes = reserved[0]
+        if contains:
+            tables.putTL([word, classes, place])
+            place += 1
         else:
-            tables.putTL(word)
+            index = tables.putST(word)
+            tables.putTL([word, "not reserved", index])
+
     print(st)
     print(tl)
