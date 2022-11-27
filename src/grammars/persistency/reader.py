@@ -40,9 +40,9 @@ def read_grammar_from(filepath) -> ContextFreeGrammar:
     start = __start_symbol_from(trimmed)
     non_terminals = __non_terminals_from(trimmed)
     terminals = __terminals_from(trimmed)
-    productions = __digest_productions_from(trimmed)
 
-    print(productions)
+    trimmed = trimmed[trimmed.index('#productions') + 1:]  # Gets everything after '#productions'.
+    productions = __digest_productions_from(trimmed)
 
     return ContextFreeGrammar(non_terminals, terminals, productions, start)
 
@@ -90,4 +90,4 @@ def __show_first_from(cfg):
 if __name__ == '__main__':
     grammar1 = read_grammar_from('reduced_grammar1.txt')
     print(grammar1.productions)
-    __show_first_from(grammar1)
+    # __show_first_from(grammar1)
