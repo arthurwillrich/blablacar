@@ -22,11 +22,12 @@ class AnalysisTableContrcutor:
 
         my_list = dict()
 
+
         if i == 1:
-            for key, value in self.grammar.first().items():
+            for key, value in self.grammar.find_firsts().items():
                 my_list[key] = list(value)
         if i == 2:
-            for key, value in self.grammar.follow().items():
+            for key, value in self.grammar.find_follows().items():
                 my_list[key] = list(value)
         if i == 3:
             for key, value in self.grammar.productions.items():
@@ -35,11 +36,14 @@ class AnalysisTableContrcutor:
 
     def generate_table(self):
 
+        print("teste")
         first = self.set_to_list(1)
         follows = self.set_to_list(2)
         productions = self.set_to_list(3)
 
+        print(first)
         print(follows)
+        print(productions)
 
         non_terminals = list(self.non_terminals)
         terminals = (list(self.terminals) + ['$'])
@@ -156,7 +160,7 @@ class AnalysisTableContrcutor:
 
 
 if __name__ == '__main__':
-    read_grammar = new_read_grammar_from('gramatica.txt')
+    read_grammar = new_read_grammar_from('gramaticaexemplo.txt')
     analysisTable = AnalysisTableContrcutor(read_grammar)
     analysisTable.generate_table()
     analysisTable.run_analysis("ivi^i")

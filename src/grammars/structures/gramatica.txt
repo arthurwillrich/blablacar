@@ -1,4 +1,0 @@
-E->EvT|T
-E'->vTE'|&
-T->FT'
-F->!F|id

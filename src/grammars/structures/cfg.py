@@ -25,6 +25,109 @@ class ContextFreeGrammar:
             gatherer += '\n'
         return gatherer
 
+    def find_firsts(self):
+        firsts = {symbol: set() for symbol in self.non_terminals}
+        print("Productions: ", self.productions)
+        for i in range(10):
+            for nt in self.non_terminals:
+                for productions in self.productions[nt]:
+                    for product in productions:
+                        if product[0] in self.terminals:
+                            tempset = firsts[nt]
+                            tempset.add(product[0])
+                            firsts[nt] = tempset
+                        if product[0] in self.non_terminals:
+                            counter = 0
+
+                            for h in range(3):
+                                if product[counter] in self.non_terminals:
+                                    if self.isNullable(firsts[product[counter]]):
+                                        counter += 1
+                                        self.verify_first(counter, product, firsts, nt)
+
+                            tempset = firsts[nt]
+                            auxtempset = firsts[product[0]]
+                            tempset = tempset | auxtempset
+                            if '&' in tempset:
+                                tempset.remove('&')
+                            firsts[nt] = tempset
+
+        print("FIRSTS: ", firsts)
+        return firsts
+
+    def isNullable(self, my_list: set()):
+        if '&' in my_list:
+            return True
+        else:
+            return False
+
+    def verify_first(self, i, product, firsts: set(), nt):
+
+        if len(product) > i:
+            if product[i] in self.terminals:
+                tempset = firsts[nt]
+                tempset.add(product[i])
+                firsts[nt] = tempset
+            if product[i] in self.non_terminals:
+                tempset = firsts[nt]
+                auxtempset = firsts[product[i]]
+                tempset = tempset | auxtempset
+                if '&' in tempset:
+                    tempset.remove('&')
+                firsts[nt] = tempset
+
+    def verify_follow(self, i, product, follows: set(), nt, firsts: set(), before=1):
+        tempset = follows[nt]
+        print("product: ", product)
+
+        if len(product) > i and i > 0:
+            if product[i - 1] in self.non_terminals:
+                tempset = follows[product[i - before]]
+                if product[i] in self.terminals:
+                    tempset.add(product[i])
+                elif product[i] in self.non_terminals:
+                    auxtempset = firsts[product[i]]
+                    if '&' in auxtempset:
+                        auxtempset.remove('&')
+                        self.verify_follow(i + 1, product, follows, nt, firsts, 2)
+                    tempset = tempset | auxtempset
+                    print("NT: ", nt, "Unindo :", tempset, " com ", auxtempset)
+            print("NT :", product[i - 1], "Adicionando ao dicionario: ", follows[product[i - 1]], " o ", tempset)
+            follows[product[i - 1]] = tempset
+
+    def find_follows(self):
+        firsts = self.find_firsts()
+        follows = {non_terminal: set() for non_terminal in self.non_terminals}
+        for i in range(10):
+            for nt in self.non_terminals:
+                if nt == self.start:
+                    follows[nt] = {'$'}
+                for productions in self.productions[nt]:
+                    for product in productions:
+                        if product[0] in self.terminals:
+                            pass
+
+                        counter = 0
+                        for h in range(5):
+                            if product[counter] in self.non_terminals:
+                                if self.isNullable(firsts[product[counter]]):
+                                    counter += 1
+                                    self.verify_follow(counter, product, follows, nt, firsts)
+                            if product[counter] in self.terminals and counter != 0:
+                                if product[counter - 1] in self.non_terminals:
+                                    tempset = follows[product[counter - 1]]
+                                    # print("Adicionando: ", product[counter] ," ao ", product[counter-1])
+                                    tempset.add(product[counter])
+                                    follows[product[counter - 1]] = tempset
+
+        print("FOLLOWS: ", follows)
+
+    def follow_helper(self, product, i):
+        if len(product[i]) > i + 1:
+            return product[i + 1]
+        else:
+            return ""
+
     def first(self):
         first = {symbol: set() for symbol in self.symbols}
 
@@ -45,6 +148,9 @@ class ContextFreeGrammar:
                     for letter in piece:
                         if letter in self.non_terminals and not first[letter]:
                             build_for(letter)  # Executes a depth-first search from the given letter.
+
+                        print(type(first[symbol]))
+                        print(type(first[letter]))
                         first[symbol] |= first[letter]
 
                         if not nullable[symbol]:  # & will be added by default if found in other firsts,
