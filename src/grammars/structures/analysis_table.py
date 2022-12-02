@@ -36,14 +36,9 @@ class AnalysisTableContrcutor:
 
     def generate_table(self):
 
-        print("teste")
         first = self.set_to_list(1)
         follows = self.set_to_list(2)
         productions = self.set_to_list(3)
-
-        print(first)
-        print(follows)
-        print(productions)
 
         non_terminals = list(self.non_terminals)
         terminals = (list(self.terminals) + ['$'])
@@ -131,7 +126,7 @@ class AnalysisTableContrcutor:
             else:
                 accepted = False
                 break
-        print(accepted)
+        print("Aceitou?: ", accepted)
         return stacktrace, accepted
 
 

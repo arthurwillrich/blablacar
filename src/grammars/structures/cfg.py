@@ -27,13 +27,12 @@ class ContextFreeGrammar:
 
     def find_firsts(self):
         firsts = {symbol: set() for symbol in self.non_terminals}
-        print("Productions: ", self.productions)
         for i in range(10):
             for nt in self.non_terminals:
                 for productions in self.productions[nt]:
                     for product in productions:
                         if product[0] in self.terminals:
-                            tempset = firsts[nt]
+                            tempset = set(firsts[nt])
                             tempset.add(product[0])
                             firsts[nt] = tempset
                         if product[0] in self.non_terminals:
@@ -45,14 +44,12 @@ class ContextFreeGrammar:
                                         counter += 1
                                         self.verify_first(counter, product, firsts, nt)
 
-                            tempset = firsts[nt]
+                            tempset = set(firsts[nt])
                             auxtempset = firsts[product[0]]
                             tempset = tempset | auxtempset
                             if '&' in tempset:
                                 tempset.remove('&')
                             firsts[nt] = tempset
-
-        print("FIRSTS: ", firsts)
         return firsts
 
     def isNullable(self, my_list: set()):
@@ -76,57 +73,68 @@ class ContextFreeGrammar:
                     tempset.remove('&')
                 firsts[nt] = tempset
 
-    def verify_follow(self, i, product, follows: set(), nt, firsts: set(), before=1):
-        tempset = follows[nt]
-        print("product: ", product)
-
-        if len(product) > i and i > 0:
-            if product[i - 1] in self.non_terminals:
-                tempset = follows[product[i - before]]
-                if product[i] in self.terminals:
-                    tempset.add(product[i])
-                elif product[i] in self.non_terminals:
-                    auxtempset = firsts[product[i]]
-                    if '&' in auxtempset:
-                        auxtempset.remove('&')
-                        self.verify_follow(i + 1, product, follows, nt, firsts, 2)
-                    tempset = tempset | auxtempset
-                    print("NT: ", nt, "Unindo :", tempset, " com ", auxtempset)
-            print("NT :", product[i - 1], "Adicionando ao dicionario: ", follows[product[i - 1]], " o ", tempset)
-            follows[product[i - 1]] = tempset
-
     def find_follows(self):
         firsts = self.find_firsts()
-        follows = {non_terminal: set() for non_terminal in self.non_terminals}
-        for i in range(10):
-            for nt in self.non_terminals:
-                if nt == self.start:
-                    follows[nt] = {'$'}
-                for productions in self.productions[nt]:
-                    for product in productions:
-                        if product[0] in self.terminals:
-                            pass
+        print("FIRSTS: ", firsts)
 
-                        counter = 0
-                        for h in range(5):
-                            if product[counter] in self.non_terminals:
-                                if self.isNullable(firsts[product[counter]]):
-                                    counter += 1
-                                    self.verify_follow(counter, product, follows, nt, firsts)
-                            if product[counter] in self.terminals and counter != 0:
-                                if product[counter - 1] in self.non_terminals:
-                                    tempset = follows[product[counter - 1]]
-                                    # print("Adicionando: ", product[counter] ," ao ", product[counter-1])
-                                    tempset.add(product[counter])
-                                    follows[product[counter - 1]] = tempset
+        follows = {non_terminal: set() for non_terminal in self.non_terminals}
+
+        for nt in self.non_terminals:
+            if nt == self.start:
+                follows[nt] = {'$'}
+            for productions in self.productions[nt]:
+                for product in productions:
+                    for i, _ in enumerate(product):
+                        if product[i] in self.non_terminals and i < len(product) - 1:
+                            if product[i+1] in self.non_terminals:
+                                follows[product[i]] = firsts[product[i+1]] | follows[product[i]]
+                                if '&' in follows[product[i]]:
+                                    follows[product[i]].remove('&')
+                            if product[i+1] in self.terminals:
+                                follows[product[i]] = set(product[i+1]) | follows[product[i]]
+                            elif '&' in firsts[product[i]] and product[i+1] in self.non_terminals:
+                                follows[product[i]] |= firsts[product[i+1]]
+                                product_aux = [char for char in product]
+                                product_aux.remove(product[i])
+                                new = self.char_to_string(product_aux)
+                                productions.append(new)
+                                if '&' in follows[product[i]]:
+                                    follows[product[i]].remove('&')
+                            elif '&' in firsts[product[i]] and product[i+1] in self.terminals:
+                                follows[product[i]] |= set(product[i])
+                                if '&' in follows[product[i]]:
+                                    follows[product[i]].remove('&')
+                            if product[i+1] in self.non_terminals:
+                                if self.isNullable(firsts[product[i+1]]): # if self.nullable()[product[i+1]]:
+                                    product_aux = [char for char in product]
+                                    product_aux.remove(product[i+1])
+                                    new = self.char_to_string(product_aux)
+                                    productions.append(new)
+
+                        elif product[i] in self.non_terminals and i == len(product) - 1:
+                            follows[product[i]] = follows[nt] | follows[product[i]]
 
         print("FOLLOWS: ", follows)
+        return follows
+
+    def char_to_string(self, a):
+        new = ""
+        for x in a:
+            new += x
+        return new
 
     def follow_helper(self, product, i):
         if len(product[i]) > i + 1:
             return product[i + 1]
         else:
             return ""
+
+    # Python program to convert a list
+    # of character
+
+
+
+
 
     def first(self):
         first = {symbol: set() for symbol in self.symbols}
