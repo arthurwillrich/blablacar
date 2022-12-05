@@ -1,3 +1,5 @@
-S -> Ab | ABc
-B -> bB | Ad | &
-A -> aA | &
+E -> TX
+X -> vTX | &
+T -> FH
+H -> ^FH | &
+F -> !F | i
