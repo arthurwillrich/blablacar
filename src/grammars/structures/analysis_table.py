@@ -61,7 +61,6 @@ class AnalysisTableContrcutor:
                 split_productions[i] = ((productions[p])[c-1])
                 aux_dict[i] = p
                 i = i+1
-        print(split_productions)
         self.split_productions = split_productions
 
 
@@ -188,32 +187,59 @@ class AnalysisTableContrcutor:
 
     #print((analysisTable.table[column])['i'])
 
-
-if __name__ == '__main__':
-    read_grammar = new_read_grammar_from('gramaticaexemplo.txt')
-    analysisTable = AnalysisTableContrcutor(read_grammar)
-    analysisTable.generate_table()
-    analysisTable.run_analysis("ivi^i")
+def produce_pretty_table(atc: AnalysisTableContrcutor, entrada: str):
+    atc.generate_table()
+    atc.run_analysis(entrada)
 
     table = PrettyTable()
-
     header = ['NonTerminal']
-    for terminal in analysisTable.terminals:
+    for terminal in atc.terminals:
         if terminal != '&':
             header.append(terminal)
 
     table.field_names = header
 
-    for nt in analysisTable.non_terminals:
+    for nt in atc.non_terminals:
         entry = []
         entry.append(nt)
-        mydict = analysisTable.table[nt]
-        for t in analysisTable.terminals:
+        mydict = atc.table[nt]
+        for t in atc.terminals:
             if t != '&':
                 entry.append(mydict[t])
         table.add_row(entry)
 
     print(table)
+
+
+
+
+if __name__ == '__main__':
+    read_grammar = new_read_grammar_from('gramaticaexemplo.txt')
+    analysisTable = AnalysisTableContrcutor(read_grammar)
+    produce_pretty_table(analysisTable)
+
+    # analysisTable.generate_table()
+    # analysisTable.run_analysis("ivi^i")
+    #
+    # table = PrettyTable()
+    #
+    # header = ['NonTerminal']
+    # for terminal in analysisTable.terminals:
+    #     if terminal != '&':
+    #         header.append(terminal)
+    #
+    # table.field_names = header
+    #
+    # for nt in analysisTable.non_terminals:
+    #     entry = []
+    #     entry.append(nt)
+    #     mydict = analysisTable.table[nt]
+    #     for t in analysisTable.terminals:
+    #         if t != '&':
+    #             entry.append(mydict[t])
+    #     table.add_row(entry)
+
+    # print(table)
 
 
 
