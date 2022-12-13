@@ -28,7 +28,7 @@ def new_read_grammar_from(filepath) -> ContextFreeGrammar:
                         t_set.add(char)
         p_set = __digest_productions_from(trimmed)
 
-        return ContextFreeGrammar(nt_set, t_set, p_set, start)
+        return ContextFreeGrammar(nt_set, t_set, p_set, start, filepath)
 
 
 def read_grammar_from(filepath) -> ContextFreeGrammar:

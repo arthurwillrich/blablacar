@@ -53,15 +53,25 @@ class AnalysisTableContrcutor:
 
         split_productions = dict()
         aux_dict = dict()
+
+        aux = new_read_grammar_from('prova.txt')
+        self.productions = aux.productions
+
+        print(aux.productions)
+
         self.terminals.add('$')
 
 
-        for p in self.productions:
-            for c in range(len(self.productions[p])):
-                split_productions[i] = ((productions[p])[c-1])
+        for p in aux.productions:
+            for c in range(len(aux.productions[p])):
+                split_productions[i] = ((aux.productions[p])[c-1])
                 aux_dict[i] = p
                 i = i+1
         self.split_productions = split_productions
+
+        print("firsts: ", first)
+        print("follows: ", follows)
+        print("EH O SPLITAS:", self.split_productions)
 
 
         #for key,value in first.items():
@@ -70,10 +80,9 @@ class AnalysisTableContrcutor:
 
         for non_terminal in self.non_terminals:
             firsts = first[non_terminal]
-
+            print("NT: ", non_terminal)
             for derivation in split_productions:
-                # print(derivation)
-                # print((split_productions[derivation])[0])
+
                 if (split_productions[derivation])[0] in self.terminals:
 
                     if '&' in (split_productions[derivation])[0]:
@@ -83,22 +92,26 @@ class AnalysisTableContrcutor:
                         # print(type(split_productions[derivation]))
                         if split_productions[derivation][0] == '$':
                             for follow in follows[non_terminal]:
-                                table[non_terminal][follow] = derivation
-                            table[non_terminal][('$')[0]] = derivation
+                                table[non_terminal][follow] = derivation # CORRETO
+                            table[non_terminal][('$')[0]] = derivation # PARECE CORRETO
 
                         elif '$' in (split_productions[derivation])[0]:
+                            print("??" ,split_productions[derivation])
+
                             (split_productions[derivation])[0] = '$'
-                            table[non_terminal][(split_productions[derivation])[0]] = derivation
+                            table[non_terminal][(split_productions[derivation])[0]] = derivation # NAO ENTRA
 
                         else:
 
-                            table[non_terminal][(split_productions[derivation])[0]] = derivation
+                            table[non_terminal][(split_productions[derivation])[0]] = derivation # NAO ENTRA
                 else:
                     for key in firsts:
                         if key == '&':
                             key = '$'
                         if table[non_terminal][key] == '' and aux_dict[derivation] == non_terminal:
-                            table[non_terminal][key] = derivation
+                            table[non_terminal][key] = derivation # ERRADO
+                            print("Adicionando ", derivation, "em ", non_terminal)
+
 
         self.table = table
 
@@ -113,10 +126,11 @@ class AnalysisTableContrcutor:
 
         self.clean_entries()
 
+
         while entry != '' and stack != '':
             history = {"stack": stack, "entry": entry}
             stacktrace.append(copy.deepcopy(history))
-            print(history)
+            # print(history)
             symbol = stack.pop()
 
             if symbol in variables:
@@ -214,9 +228,9 @@ def produce_pretty_table(atc: AnalysisTableContrcutor, entrada: str):
 
 
 if __name__ == '__main__':
-    read_grammar = new_read_grammar_from('gramaticaexemplo.txt')
+    read_grammar = new_read_grammar_from('prova.txt')
     analysisTable = AnalysisTableContrcutor(read_grammar)
-    produce_pretty_table(analysisTable)
+    produce_pretty_table(analysisTable, "cvfm;be;be") # arg1 : AnalysisTableContructor arg2 : entry to test
 
     # analysisTable.generate_table()
     # analysisTable.run_analysis("ivi^i")

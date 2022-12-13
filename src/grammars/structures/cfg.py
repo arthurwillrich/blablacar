@@ -6,7 +6,7 @@ class ContextFreeGrammar:
     __MAX_FACTOR = 2
     __VARIABLES = set(string.ascii_uppercase)
 
-    def __init__(self, non_terminals, terminals, productions: dict, start='S'):
+    def __init__(self, non_terminals, terminals, productions: dict, start='S', filepath =''):
         self.non_terminals = non_terminals
         self.terminals = terminals
         self.symbols: set = self.terminals | self.non_terminals
@@ -14,6 +14,7 @@ class ContextFreeGrammar:
         self.start = start
         self.number_state = dict()
         self.state_number = dict()
+        self.filepath = filepath
 
     def __str__(self):
         gatherer = str()
@@ -41,16 +42,18 @@ class ContextFreeGrammar:
                             counter = 0
 
                             for h in range(3):
-                                if product[counter] in self.non_terminals:
-                                    if self.isNullable(firsts[product[counter]]):
-                                        counter += 1
-                                        self.verify_first(counter, product, firsts, nt)
+
+                                if len(product) > counter:
+                                    if product[counter] in self.non_terminals:
+                                        if self.isNullable(firsts[product[counter]]):
+                                            counter += 1
+                                            self.verify_first(counter, product, firsts, nt)
 
                             tempset = set(firsts[nt])
                             auxtempset = firsts[product[0]]
                             tempset = tempset | auxtempset
-                            if '&' in tempset:
-                                tempset.remove('&')
+                            # if '&' in tempset:
+                            #     tempset.remove('&')
                             firsts[nt] = tempset
 
         return firsts
@@ -63,65 +66,110 @@ class ContextFreeGrammar:
 
     def verify_first(self, i, product, firsts: set(), nt):
 
-        if len(product) > i:
-            if product[i] in self.terminals:
+        if len(product) >= i:
+            if product[i - 1] in self.terminals:
                 tempset = firsts[nt]
-                tempset.add(product[i])
+                tempset.add(product[i - 1])
                 firsts[nt] = tempset
-            if product[i] in self.non_terminals:
+            if product[i - 1] in self.non_terminals:
                 tempset = firsts[nt]
-                auxtempset = firsts[product[i]]
+                auxtempset = firsts[product[i - 1]]
                 tempset = tempset | auxtempset
-                if '&' in tempset:
-                    tempset.remove('&')
+                # if '&' in tempset:
+                #     tempset.remove('&')
                 firsts[nt] = tempset
 
     def find_follows(self):
         firsts = self.find_firsts()
-
-        print("FIRSTS: ", firsts)
-
         follows = {non_terminal: set() for non_terminal in self.non_terminals}
+        initial_state = self.start
+        follows[initial_state] = {'$'}
+
+
 
         for loop in range(5):
+
             for nt in self.non_terminals:
-                if nt == self.start:
-                    follows[nt] = {'$'}
-                for productions in self.productions[nt]:
+                aux_product_list = list(self.productions[nt])
+                for productions in aux_product_list:
+                    # print(type(productions))
+
                     for product in productions:
+
                         for i, _ in enumerate(product):
+
+                            # print(i)
+                            # print(product)
+                            # print(nt)
+                            # print(productions)
+
+                            # print(follows['P'])
+
                             if product[i] in self.non_terminals and i < len(product) - 1:
+
                                 if product[i + 1] in self.non_terminals:
+
                                     follows[product[i]] = firsts[product[i + 1]] | follows[product[i]]
 
                                     if '&' in follows[product[i]]:
+
                                         follows[product[i]].remove('&')
+
                                 if product[i + 1] in self.terminals:
+
                                     follows[product[i]] = set(product[i + 1]) | follows[product[i]]
+
+                                if product[i + 1] in self.terminals:
+
+                                    follows[product[i]] = set(product[i + 1]) | follows[product[i]]
+
                                 elif '&' in firsts[product[i]] and product[i + 1] in self.non_terminals:
+
                                     follows[product[i]] |= firsts[product[i + 1]]
+
                                     product_aux = [char for char in product]
                                     product_aux.remove(product[i])
-                                    new = self.char_to_string(product_aux)
-                                    productions.append(new)
+                                    new = self.char_to_string(product[i])
+
+                                    if new not in productions:
+                                        # print("ANTES:: ", self.productions)
+                                        productions.append(new)
+                                        # print("DPS:: ", self.productions)
+
+
                                     if '&' in follows[product[i]]:
                                         follows[product[i]].remove('&')
                                 elif '&' in firsts[product[i]] and product[i + 1] in self.terminals:
-                                    follows[product[i]] |= set(product[i])
+
+                                    follows[product[i]] = follows[product[i]] | set(product[i])
+
 
                                     if '&' in follows[product[i]]:
+
                                         follows[product[i]].remove('&')
+
                                 if product[i + 1] in self.non_terminals:
+
                                     if self.isNullable(firsts[product[i + 1]]):  # if self.nullable()[product[i+1]]:
+
                                         product_aux = [char for char in product]
                                         product_aux.remove(product[i + 1])
                                         new = self.char_to_string(product_aux)
-                                        productions.append(new)
 
+                                        if new not in productions:
+                                            # print("ANTES2:: ", self.productions)
+                                            productions.append(new)
+                                            # print("DPS2:: ", self.productions)
                             elif product[i] in self.non_terminals and i == len(product) - 1:
+
+                                # if product[i] == "V":
+                                #     print("Colocando follows de ", nt, " em", product[i])
+                                #     print("Follows de: ", nt, ": ", follows[nt])
+                                #     print("Follows de: ", product[i], ": ", follows[product[i]])
                                 follows[product[i]] = follows[nt] | follows[product[i]]
 
-        print("FOLLOWS: ", follows)
+
+
         return follows
 
     def char_to_string(self, a):
@@ -292,28 +340,18 @@ class ContextFreeGrammar:
         #     for i in productions:
         #         self.indirect_recursion(productions[i], assoc, i)
 
-
         for i in productions:
-            print("PASSANDO : ", productions[i])
             self.indirect_recursion(productions[i], assoc, i)
         productions[i] = [x for x in productions[i] if x]
-        print("MEIO: ", productions)
         for i in productions:
-            print("PASSANDO : ", productions[i])
             self.direct_recursion(productions[i], assoc, i)
-
-        print("FIM:", self.productions)
 
     def indirect_recursion(self, product, assoc, key):
 
         productions = product[:]
 
-        print(productions)
-
         for product in productions:
             if product[0][0] in self.non_terminals:
-                print(assoc)
-                print(key)
                 if assoc[product[0][0]] < key:
                     to_change = []
                     after = product[0][1:]
@@ -323,7 +361,8 @@ class ContextFreeGrammar:
                     product.remove(product[0])
                     for aux in to_change:
                         self.productions[self.number_state[key]].append([aux])
-                    self.productions[self.number_state[key]] = [x for x in self.productions[self.number_state[key]] if x]
+                    self.productions[self.number_state[key]] = [x for x in self.productions[self.number_state[key]] if
+                                                                x]
 
     def direct_recursion(self, product, assoc, key):
 
@@ -331,7 +370,7 @@ class ContextFreeGrammar:
         for nt in assoc:
             need_change = False
             productions = product[:]
-            print("PRODUCTIONS:" , productions)
+            print("PRODUCTIONS:", productions)
             to_remove = []
             product_aux = product[:]
             for i in range(len(productions)):
