@@ -69,51 +69,65 @@ class AnalysisTableContrcutor:
                 i = i+1
         self.split_productions = split_productions
 
-        print("firsts: ", first)
-        print("follows: ", follows)
-        print("EH O SPLITAS:", self.split_productions)
+        # print("firsts: ", first)
+        # print("follows: ", follows)
+        # print("EH O SPLITAS:", self.split_productions)
 
 
         #for key,value in first.items():
             #print(type(value))
 
+        print("terminais: ", self.terminals)
+        print(split_productions)
+        print("AUXDICKT :", aux_dict)
 
+        print(self,non_terminals)
+        #TODO ARRUMAR V
         for non_terminal in self.non_terminals:
             firsts = first[non_terminal]
-            print("NT: ", non_terminal)
             for derivation in split_productions:
 
-                if (split_productions[derivation])[0] in self.terminals:
+                if (split_productions[derivation])[0][0] in self.terminals:
 
-                    if '&' in (split_productions[derivation])[0]:
+                    if split_productions[derivation][0] == '&':
                         split_productions[derivation][0] = '$'
 
-                    if table[non_terminal][(split_productions[derivation])[0]] == '' and aux_dict[derivation] == non_terminal:
-                        # print(type(split_productions[derivation]))
+                    if table[non_terminal][(split_productions[derivation])[0][0]] == '' and aux_dict[derivation] == non_terminal:
+
                         if split_productions[derivation][0] == '$':
                             for follow in follows[non_terminal]:
                                 table[non_terminal][follow] = derivation # CORRETO
+
                             table[non_terminal][('$')[0]] = derivation # PARECE CORRETO
 
+
                         elif '$' in (split_productions[derivation])[0]:
-                            print("??" ,split_productions[derivation])
 
                             (split_productions[derivation])[0] = '$'
-                            table[non_terminal][(split_productions[derivation])[0]] = derivation # NAO ENTRA
-
+                            table[non_terminal][(split_productions[derivation])[0][0]] = derivation
                         else:
+                            table[non_terminal][(split_productions[derivation])[0][0]] = derivation
 
-                            table[non_terminal][(split_productions[derivation])[0]] = derivation # NAO ENTRA
-                else:
-                    for key in firsts:
+                elif (split_productions[derivation])[0][0] in self.non_terminals:
+                    print((split_productions[derivation])[0][0])
+                    print(first[(split_productions[derivation])[0][0]])
+                    for key in first[(split_productions[derivation])[0][0]]:
                         if key == '&':
                             key = '$'
                         if table[non_terminal][key] == '' and aux_dict[derivation] == non_terminal:
-                            table[non_terminal][key] = derivation # ERRADO
-                            print("Adicionando ", derivation, "em ", non_terminal)
-
+                            table[non_terminal][key] = derivation
+                    if self.is_nullable((split_productions[derivation])[0][0], firsts):
+                        for follow in follows[(split_productions[derivation])[0][0]]:
+                            if table[non_terminal][follow] == '' and aux_dict[derivation] == non_terminal:
+                                table[non_terminal][follow] = derivation
 
         self.table = table
+
+    def is_nullable(self, non_terminal, firsts):
+        if '&' in firsts:
+            return True
+        else: return False
+
 
     def run_analysis(self, sentence):
         stacktrace = []
