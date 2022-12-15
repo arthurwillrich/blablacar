@@ -73,6 +73,7 @@ def closure_states_for(nfa: FiniteAutomata) -> dict:
 
 def __squash(states: set) -> State:
     """Digests a :param state set: into a single :return state."""
+
     label = sorted([state.label for state in states])
     squashed = ''.join(label)
     return State(squashed)
@@ -143,11 +144,12 @@ if __name__ == '__main__':
     # print(fa1)
     # print(fa2)
 
-    # fa2 = determinize(fa2)
+    uniao = (fa1 | fa2)
+    uniao = determinize(uniao)
 
-    # print(fa2)
+    print(uniao)
 
-    print(fa1 | fa2)
+    # print(fa1 | fa2)
     # write(fa1 | fa2)
 
 

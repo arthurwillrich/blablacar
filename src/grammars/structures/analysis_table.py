@@ -57,7 +57,6 @@ class AnalysisTableContrcutor:
         aux = new_read_grammar_from('prova.txt')
         self.productions = aux.productions
 
-        print(aux.productions)
 
         self.terminals.add('$')
 
@@ -77,9 +76,6 @@ class AnalysisTableContrcutor:
         #for key,value in first.items():
             #print(type(value))
 
-        print("terminais: ", self.terminals)
-        print(split_productions)
-        print("AUXDICKT :", aux_dict)
 
         print(self,non_terminals)
         #TODO ARRUMAR V

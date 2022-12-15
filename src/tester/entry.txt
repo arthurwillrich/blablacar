@@ -1,5 +1,2 @@
-E -> TE'
-E' -> vTE' | &
-T -> FT'
-T' -> ^FT' | &
-F -> !F | i
+(a|b)*abb#
+(a|b)#

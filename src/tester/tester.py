@@ -1,26 +1,62 @@
+from src.automata.determinization.conversion import determinize
 from src.grammars.persistency.reader import new_read_grammar_from
 from src.grammars.structures.analysis_table import AnalysisTableContrcutor
 from src.grammars.structures.analysis_table import produce_pretty_table
 import os
 from os.path import dirname
 
+from src.regex.conversion import fa_from
+from src.regex.tree import SyntaxTree, show_tree_from
+
 if __name__ == '__main__':
 
-    path = dirname(__file__)+'/'
-    file = 'entry.txt'
-    dir_list = os.listdir(path)
-    print("List of directories and files before creation:")
-    print(dir_list)
-    print()
+    loop = True
 
-    with open(os.path.join(path, file), 'w') as fp:
-        pass
+    while(loop):
 
-    input("Digite a gramática em entry.txt e aperte enter")
+        parte = input("Digite se quer testar a parte 1 ou parte 2")
 
-    read_grammar = new_read_grammar_from(path+"entry.txt")
 
-    print(read_grammar)
+        if parte == '1':
+            with open('entry.txt') as f:
+                lines = f.readlines()
+                er1 = lines[0][:-1]
+                er2 = lines[1]
+
+
+            print(er1)
+            print(er2)
+
+
+            fa1 = fa_from(er1)
+            t1 = SyntaxTree(er1)
+            show_tree_from(t1.root)
+            print(fa1)
+
+            print("===============================")
+
+            fa2 = fa_from(er2)
+            t2 = SyntaxTree(er2)
+            show_tree_from(t2.root)
+            print(fa2)
+
+
+            print("+++++++++++++ UNIAO ++++++++++++++")
+            print(fa1|fa2)
+            uniao = (fa1|fa2)
+
+            print("+++++++++++ DETERMINIZACAO ++++++++++++++++")
+            uniao = determinize(uniao)
+            print(uniao)
+
+        elif parte == '2':
+            grammar1 = new_read_grammar_from('direct_rec.txt')
+            grammar1.factor()
+            print(grammar1)
+        elif parte == 'clear':
+            pass
+        elif parte == 'fim':
+            loop = False
 
 
 

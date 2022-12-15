@@ -1,3 +1,5 @@
-S -> aSB | aSA | S
-A -> aB | aS | bA | bS
-B -> b
+S -> AC | BC
+A -> aD | cC
+B -> aB | dD
+C -> eC | eA
+D -> fD | CB

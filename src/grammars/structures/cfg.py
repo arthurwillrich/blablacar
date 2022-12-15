@@ -184,8 +184,6 @@ class ContextFreeGrammar:
                         if letter in self.non_terminals and not first[letter]:
                             build_for(letter)  # Executes a depth-first search from the given letter.
 
-                        print(type(first[symbol]))
-                        print(type(first[letter]))
                         first[symbol] |= first[letter]
 
                         if not nullable[symbol]:  # & will be added by default if found in other firsts,
@@ -480,32 +478,48 @@ class ContextFreeGrammar:
         productions = self.prepair_recursion()
         assoc = self.create_association()
 
-        for i in range(1, len(self.productions)+1):
-            print("ESTOY PASNSANDO: ", [i])
-            print(self.productions)
-            self.new_remove_direct_nom_determinism(productions[i], self.number_state[i])
-            print(self.productions)
-        for i in range(1, len(self.productions)+1):
-            print("ESTOY PASNSANDO: ", [i])
-            print(self.productions)
-            self.new_remove_direct_nom_determinism(productions[i], self.number_state[i])
-            print(self.productions)
+        dict_aux = {non_terminal: set() for non_terminal in self.non_terminals}
+        before_aux=[]
+        for i in range (10):
+            productions = self.prepair_recursion()
+            assoc = self.create_association()
+            for i in range(1, len(self.productions)+1):
+                self.new_remove_indirect_nom_determinism(productions[i], self.number_state[i], dict_aux)
+            after_aux = dict(self.productions)
 
-        for i in range (2):
-            for i in range(1, len(self.productions) + 1):
-                print("ESTOY PASNSANDO: ", [i])
-                print(self.productions)
-                self.new_remove_direct_nom_determinism(productions[i], self.number_state[i])
-                print(self.productions)
+            productions = self.prepair_recursion()
+            assoc = self.create_association()
+            if before_aux != after_aux:
+                for i in range(1, len(self.productions)+1):
+                    self.new_remove_direct_nom_determinism(productions[i], self.number_state[i])
+                productions = self.prepair_recursion()
+                assoc = self.create_association()
+                before_aux = dict(self.productions)
+                # self.create_dick(productions[i], self.number_state[i], dict_aux)
+            else: break
 
 
-        print("============")
-        print(self.productions)
-        print(assoc)
-        print(productions)
-        print("============")
 
-        print(self)
+
+
+
+        # for i in range(1, len(self.productions)+1):
+        #     print("ESTOY PASNSANDO: ", [i])
+        #     print(self.productions)
+        #     self.new_remove_direct_nom_determinism(productions[i], self.number_state[i])
+        #     print(self.productions)
+
+        # for i in range (2):
+        #     for i in range(1, len(self.productions) + 1):
+        #         print("ESTOY PASNSANDO: ", [i])
+        #         print(self.productions)
+        #         self.new_remove_direct_nom_determinism(productions[i], self.number_state[i])
+        #         print(self.productions)
+
+
+
+
+        # print("SEKF", self)
 
         # while iterations < ContextFreeGrammar.__MAX_FACTOR:
         #     # length = self.number_derivation()
@@ -579,26 +593,13 @@ class ContextFreeGrammar:
                         if new_derivation not in self.dictionary[variable]:
                             self.dictionary[variable].append(new_derivation)
     def new_remove_direct_nom_determinism(self, productions, non_terminal):
-        # print("???", productions)
-
-        # print(productions)
-
-
         if len(productions) < 2:
             return
-
         for i in range(len(productions)):
-            print("Comecei")
             to_remove = []
-
             need_change = False
-
-            print(productions)
-            print(self.productions)
             # print(productions[i][0])
-            print(productions[i][0][0])
             if productions[i][0][0] in self.terminals:
-                print("ADENTREI: " , self.productions)
                 to_check = productions[i][0][0]
                 for i in range(len(productions)):
                     if productions[i][0][0] == to_check:
@@ -622,15 +623,51 @@ class ContextFreeGrammar:
                     for i in range(len(to_remove)):
                         to_remove[i] = to_remove[i][1:]
 
+
+                    for i in range(len(to_remove)):
+                        to_remove[i] = [to_remove[i]]
                     self.productions[new_state] = to_remove
+
                     self.create_association()
                     self.prepair_recursion()
                     self.productions[non_terminal] = aux_productions
-                    print("FIZ: ", self.productions)
                     to_remove = []
                     to_check = []
                     need_change = False
                 break
+
+    def create_dick(self, productions, non_terminal, dict_aux):
+        if len(productions) < 2:
+            return
+        for i in range(len(productions)):
+
+            to_remove = []
+            need_change = False
+            set_aux = set()
+            if productions[i][0][0] in self.non_terminals:
+                to_check = productions[i][0][0]
+                for i in range(len(productions)):
+                    verify_this = self.productions[to_check][:]
+                    for i in range(len(verify_this)):
+                        if verify_this[i][0][0] in self.terminals:
+                            set_aux.add(verify_this[i][0][0])
+                            dict_aux[to_check] |= set(set_aux)
+
+    def new_remove_indirect_nom_determinism(self, productions, non_terminal, dict_aux):
+        to_remove = []
+
+        if len(productions) < 2:
+            return
+        for i in range(len(productions)):
+
+            if productions[i][0][0] in self.non_terminals:
+                for x in range(len(self.productions[productions[i][0][0]])):
+                    self.productions[non_terminal].append([self.productions[productions[i][0][0]][x][0] + productions[i][0][1:]])
+                to_remove.append([productions[i][0]])
+                # self.productions[non_terminal].remove([productions[i][0]])
+        for i in range(len(to_remove)):
+            if to_remove[i] in self.productions[non_terminal]:
+                self.productions[non_terminal].remove(to_remove[i])
 
 
     def __is_variable(self, character):
