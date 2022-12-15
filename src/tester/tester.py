@@ -4,17 +4,32 @@ from src.grammars.structures.analysis_table import AnalysisTableContrcutor
 from src.grammars.structures.analysis_table import produce_pretty_table
 import os
 from os.path import dirname
+#import only system from os
+from os import system, name
 
+# import sleep to show output for some time period
+from time import sleep
 from src.regex.conversion import fa_from
 from src.regex.tree import SyntaxTree, show_tree_from
 
+
+
+    # now call function we defined above
 if __name__ == '__main__':
 
     loop = True
 
     while(loop):
 
-        parte = input("Digite se quer testar a parte 1 ou parte 2")
+        parte = input("""Digite se quer testar: 
+                      '1' - PARTE 1
+                      'rec' - recursão
+                      'fat' - fatoração
+                      'tab' - gerar tabela
+                      'anl' - analisar entrada 
+                      'ffg' - calcular first e follows
+                      
+                      """)
 
 
         if parte == '1':
@@ -47,14 +62,32 @@ if __name__ == '__main__':
 
             print("+++++++++++ DETERMINIZACAO ++++++++++++++++")
             uniao = determinize(uniao)
-            print(uniao)
 
-        elif parte == '2':
+        elif parte == 'rec':
             grammar1 = new_read_grammar_from('direct_rec.txt')
-            grammar1.factor()
+            print("========== GRAMATICA ============")
             print(grammar1)
-        elif parte == 'clear':
-            pass
+
+            print("============= RECURSAO =============")
+            grammar1.recursion()
+
+            print()
+
+        elif parte == 'fat':
+            grammar1 = new_read_grammar_from('fatoracao.txt')
+            print("========== GRAMATICA ============")
+            print(grammar1)
+
+            print("============= FATORACAO =============")
+            grammar1.factor()
+
+        elif parte == 'ffg':
+            read_grammar = new_read_grammar_from('prova.txt')
+            analysisTable = AnalysisTableContrcutor(read_grammar)
+
+
+            produce_pretty_table(analysisTable, "cvfm;be;be")
+
         elif parte == 'fim':
             loop = False
 
@@ -63,4 +96,3 @@ if __name__ == '__main__':
     # read_grammar = new_read_grammar_from('gramaticaexemplo.txt')
     # analysisTable = AnalysisTableContrcutor(read_grammar)
     # produce_pretty_table(analysisTable, "ivi^i") # arg1 : AnalysisTableContructor arg2 : entry to test
-

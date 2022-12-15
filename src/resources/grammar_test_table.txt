@@ -1,0 +1,5 @@
+E -> T A
+A -> vTA | &
+T -> FB
+B -> FB | &
+F -> !F | i

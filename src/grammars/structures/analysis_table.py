@@ -40,6 +40,8 @@ class AnalysisTableContrcutor:
         follows = self.set_to_list(2)
         productions = self.set_to_list(3)
 
+        print("FIRSTS: ", first)
+        print("FOLLOWS: ", follows)
         non_terminals = list(self.non_terminals)
         terminals = (list(self.terminals) + ['$'])
         # terminals.remove(('&'))
@@ -68,17 +70,6 @@ class AnalysisTableContrcutor:
                 i = i+1
         self.split_productions = split_productions
 
-        # print("firsts: ", first)
-        # print("follows: ", follows)
-        # print("EH O SPLITAS:", self.split_productions)
-
-
-        #for key,value in first.items():
-            #print(type(value))
-
-
-        print(self,non_terminals)
-        #TODO ARRUMAR V
         for non_terminal in self.non_terminals:
             firsts = first[non_terminal]
             for derivation in split_productions:
@@ -92,9 +83,9 @@ class AnalysisTableContrcutor:
 
                         if split_productions[derivation][0] == '$':
                             for follow in follows[non_terminal]:
-                                table[non_terminal][follow] = derivation # CORRETO
+                                table[non_terminal][follow] = derivation
 
-                            table[non_terminal][('$')[0]] = derivation # PARECE CORRETO
+                            table[non_terminal][('$')[0]] = derivation
 
 
                         elif '$' in (split_productions[derivation])[0]:
@@ -105,8 +96,7 @@ class AnalysisTableContrcutor:
                             table[non_terminal][(split_productions[derivation])[0][0]] = derivation
 
                 elif (split_productions[derivation])[0][0] in self.non_terminals:
-                    print((split_productions[derivation])[0][0])
-                    print(first[(split_productions[derivation])[0][0]])
+
                     for key in first[(split_productions[derivation])[0][0]]:
                         if key == '&':
                             key = '$'
@@ -140,7 +130,7 @@ class AnalysisTableContrcutor:
         while entry != '' and stack != '':
             history = {"stack": stack, "entry": entry}
             stacktrace.append(copy.deepcopy(history))
-            # print(history)
+            print(history)
             symbol = stack.pop()
 
             if symbol in variables:
@@ -188,28 +178,6 @@ class AnalysisTableContrcutor:
             if len(result) > 1 :
                 result.remove(notresult)
             self.split_productions[i] = result
-# analysisTable = AnalysisTableContrcutor()
-# analysisTable.read()
-#
-#
-# table = PrettyTable()
-#
-# header = ['NonTerminal']
-# for terminal in analysisTable.terminals:
-#     header.append(terminal)
-# header.append('$')
-#
-# table.field_names = header
-#
-# analysisTable.generate_table()
-# analysisTable.run_analysis('ivi^i')
-
-#for column in analysisTable.table:
-   # lista = []
-    #for line in analysisTable.table[column]:
-       # print("teste: " ,(analysisTable.table[column])[line])
-
-    #print((analysisTable.table[column])['i'])
 
 def produce_pretty_table(atc: AnalysisTableContrcutor, entrada: str):
     atc.generate_table()
@@ -238,33 +206,9 @@ def produce_pretty_table(atc: AnalysisTableContrcutor, entrada: str):
 
 
 if __name__ == '__main__':
-    read_grammar = new_read_grammar_from('prova.txt')
+    read_grammar = new_read_grammar_from('grammar_test_table.txt')
     analysisTable = AnalysisTableContrcutor(read_grammar)
-    produce_pretty_table(analysisTable, "cvfm;be;be") # arg1 : AnalysisTableContructor arg2 : entry to test
-
-    # analysisTable.generate_table()
-    # analysisTable.run_analysis("ivi^i")
-    #
-    # table = PrettyTable()
-    #
-    # header = ['NonTerminal']
-    # for terminal in analysisTable.terminals:
-    #     if terminal != '&':
-    #         header.append(terminal)
-    #
-    # table.field_names = header
-    #
-    # for nt in analysisTable.non_terminals:
-    #     entry = []
-    #     entry.append(nt)
-    #     mydict = analysisTable.table[nt]
-    #     for t in analysisTable.terminals:
-    #         if t != '&':
-    #             entry.append(mydict[t])
-    #     table.add_row(entry)
-
-    # print(table)
-
+    produce_pretty_table(analysisTable, "ivi^i")
 
 
 

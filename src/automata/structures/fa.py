@@ -71,7 +71,7 @@ class FiniteAutomata:
         new_fa.final_states = self.final_states | other.final_states
         new_fa.transitions = self.transitions | other.transitions
         new_fa.transitions[(new_fa.initial_state, '&')] = {self.initial_state, other.initial_state}
-
+        print(new_fa)
         return new_fa
 
     def __str__(self):

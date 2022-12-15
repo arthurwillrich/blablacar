@@ -313,6 +313,7 @@ class ContextFreeGrammar:
             for y in range(1, len(self.productions) + 1):
                 haha = self.number_state[y]
                 self.indirect_recursion(self.productions[haha], assoc, y)
+        print(self)
 
     def indirect_recursion(self, product, assoc, key):
 
@@ -363,13 +364,10 @@ class ContextFreeGrammar:
 
                     new_product = []
                     for i in to_remove:
-                        print(self.productions)
                         if [i[0]] in self.productions[nt]:
                             self.productions[nt].remove([i[0]])
 
-                        print(i)
                         i[0] = i[0][1:]
-                        print(i)
                         new_product.append(i)
 
 
@@ -497,6 +495,8 @@ class ContextFreeGrammar:
                 before_aux = dict(self.productions)
                 # self.create_dick(productions[i], self.number_state[i], dict_aux)
             else: break
+
+        print(self)
 
 
 

@@ -1,2 +1,5 @@
-S -> Aa | b
-A -> Ac | Sd | a
+S -> AD | BC
+A -> aC | cC
+B -> aB | dD
+C -> eC | eA
+D -> fD | AB
