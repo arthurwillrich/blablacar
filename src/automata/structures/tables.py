@@ -10,13 +10,13 @@ class Env:
         self.tl = []
         # self.prev = p
 
-    def putST(self, s: str):
+    def putST(self, s: str, st):
         if s not in self.st:
             self.st[s] = len(self.st)
             st.add_row([len(self.st),s])
         return self.st.get(s)
 
-    def putTL(self, s):
+    def putTL(self, s, tl):
         if s not in self.tl:
            tl.add_row([s])
            self.tl.append(s)
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     for line in rw_read:
         reservedTerms.append(line[:-1])
 
-    entry_file = open('entry.txt', 'r')
+    entry_file = open('entry_tabel.txt', 'r')
 
     for line in entry_file:
         for word in line.split():
@@ -53,11 +53,11 @@ if __name__ == '__main__':
                     contains = True
                     classes = reserved[0]
         if contains:
-            tables.putTL([word, classes, place])
+            tables.putTL([word, classes, place], tl)
             place += 1
         else:
             index = tables.putST(word)
-            tables.putTL([word, "not reserved", index+1])
+            tables.putTL([word, "not reserved", index+1], tl)
 
     print(st)
     print(tl)

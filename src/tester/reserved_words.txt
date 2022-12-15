@@ -1,0 +1,8 @@
+reserved class static final
+parentheses ( )
+brackets [ ]
+func_identifier main
+identifier args
+curly { }
+type void
+modifier public
