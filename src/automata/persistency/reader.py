@@ -2,11 +2,13 @@ from src.automata.structures.fa import FiniteAutomata
 from src.exceptions.MalformedFileError import MalformedFileError
 from src.automata.structures.state import State
 from src import resource_dir
+
 from src.automata.persistency.writer import write
 
 __state_cache = dict()
 
 def new_read_fa_from(filepath: str) -> FiniteAutomata:
+    alfabeto = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o''p','q','r','s','t','u','v','w','x','y','z']
     with open(resource_dir / filepath) as f:
         entry = [line.rstrip() for line in f]
     fa = FiniteAutomata()
@@ -112,14 +114,23 @@ def __verify(file_lines: list):
 
 
 if __name__ == '__main__':
-    fa1 = read_fa_from('simple_nfa.txt')
+    # fa1 = read_fa_from('simple_nfa.txt')
+
+    fa1 = new_read_fa_from('afd.txt')
     # print(fa1)
     # print(fa1.is_nfa())
 
-    fa2 = read_fa_from('ab_with_last_equals_first.txt')
+    fa2 = new_read_fa_from('afnd2.txt')
+    print(fa2)
+
+    fa2 = determinize(fa2)
+
+    print(fa2)
+
+    # fa2 = read_fa_from('ab_with_last_equals_first.txt')
     # print(fa2)
     # print(fa2.is_nfa())
 
-    print(fa1 | fa2)
-    write(fa1 | fa2)
-    print(read_fa_from('generated_fa.txt'))
+    # print(fa1 | fa2)
+    # write(fa1 | fa2)
+    # print(read_fa_from('generated_fa.txt'))

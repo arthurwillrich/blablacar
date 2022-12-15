@@ -89,6 +89,5 @@ def __show_first_from(cfg):
 
 if __name__ == '__main__':
     grammar1 = new_read_grammar_from('direct_rec.txt')
-    # grammar1.eliminate_indirect_recursion()
-    # __show_first_from(grammar1)
-    grammar1.recursion()
+    grammar1.factor()
+    print(grammar1)

@@ -6,7 +6,7 @@ class ContextFreeGrammar:
     __MAX_FACTOR = 2
     __VARIABLES = set(string.ascii_uppercase)
 
-    def __init__(self, non_terminals, terminals, productions: dict, start='S', filepath =''):
+    def __init__(self, non_terminals, terminals, productions: dict, start='S', filepath=''):
         self.non_terminals = non_terminals
         self.terminals = terminals
         self.symbols: set = self.terminals | self.non_terminals
@@ -85,25 +85,17 @@ class ContextFreeGrammar:
         initial_state = self.start
         follows[initial_state] = {'$'}
 
-
-
         for loop in range(5):
 
             for nt in self.non_terminals:
                 aux_product_list = list(self.productions[nt])
                 for productions in aux_product_list:
-                    # print(type(productions))
 
                     for product in productions:
 
                         for i, _ in enumerate(product):
 
-                            # print(i)
-                            # print(product)
-                            # print(nt)
-                            # print(productions)
 
-                            # print(follows['P'])
 
                             if product[i] in self.non_terminals and i < len(product) - 1:
 
@@ -112,11 +104,9 @@ class ContextFreeGrammar:
                                     follows[product[i]] = firsts[product[i + 1]] | follows[product[i]]
 
                                     if '&' in follows[product[i]]:
-
                                         follows[product[i]].remove('&')
 
                                 if product[i + 1] in self.terminals:
-
                                     follows[product[i]] = set(product[i + 1]) | follows[product[i]]
 
                                 if product[i + 1] in self.terminals:
@@ -132,10 +122,7 @@ class ContextFreeGrammar:
                                     new = self.char_to_string(product[i])
 
                                     if new not in productions:
-                                        # print("ANTES:: ", self.productions)
                                         productions.append(new)
-                                        # print("DPS:: ", self.productions)
-
 
                                     if '&' in follows[product[i]]:
                                         follows[product[i]].remove('&')
@@ -143,9 +130,7 @@ class ContextFreeGrammar:
 
                                     follows[product[i]] = follows[product[i]] | set(product[i])
 
-
                                     if '&' in follows[product[i]]:
-
                                         follows[product[i]].remove('&')
 
                                 if product[i + 1] in self.non_terminals:
@@ -157,18 +142,9 @@ class ContextFreeGrammar:
                                         new = self.char_to_string(product_aux)
 
                                         if new not in productions:
-                                            # print("ANTES2:: ", self.productions)
                                             productions.append(new)
-                                            # print("DPS2:: ", self.productions)
                             elif product[i] in self.non_terminals and i == len(product) - 1:
-
-                                # if product[i] == "V":
-                                #     print("Colocando follows de ", nt, " em", product[i])
-                                #     print("Follows de: ", nt, ": ", follows[nt])
-                                #     print("Follows de: ", product[i], ": ", follows[product[i]])
                                 follows[product[i]] = follows[nt] | follows[product[i]]
-
-
 
         return follows
 
@@ -315,6 +291,7 @@ class ContextFreeGrammar:
 
     def create_association(self):
         products = self.productions
+
         state_number = dict()
         number_state = dict()
         aux = 1
@@ -328,25 +305,19 @@ class ContextFreeGrammar:
 
     def recursion(self):
         productions = self.prepair_recursion()
+
         assoc = self.create_association()
 
-        # x = 1
-        # y = 1
-        #
-        # continue_rescursion = True
-
-        # while continue_rescursion:
-        #     self.direct_recursion(productions[x], assoc, x)
-        #     for i in productions:
-        #         self.indirect_recursion(productions[i], assoc, i)
-
-        for i in productions:
-            self.indirect_recursion(productions[i], assoc, i)
-        productions[i] = [x for x in productions[i] if x]
-        for i in productions:
-            self.direct_recursion(productions[i], assoc, i)
+        for x in range(1, len(self.productions) + 1):
+            productions[x] = [x for x in productions[x] if x]
+            self.direct_recursion(productions[x], assoc, x, productions)
+            productions[x] = [x for x in productions[x] if x]
+            for y in range(1, len(self.productions) + 1):
+                haha = self.number_state[y]
+                self.indirect_recursion(self.productions[haha], assoc, y)
 
     def indirect_recursion(self, product, assoc, key):
+
 
         productions = product[:]
 
@@ -361,19 +332,18 @@ class ContextFreeGrammar:
                     product.remove(product[0])
                     for aux in to_change:
                         self.productions[self.number_state[key]].append([aux])
-                    self.productions[self.number_state[key]] = [x for x in self.productions[self.number_state[key]] if
-                                                                x]
 
-    def direct_recursion(self, product, assoc, key):
+    def direct_recursion(self, product, assoc, key, product_list):
 
         non_terminals = set(self.non_terminals)
         for nt in assoc:
             need_change = False
             productions = product[:]
-            print("PRODUCTIONS:", productions)
             to_remove = []
             product_aux = product[:]
+
             for i in range(len(productions)):
+
                 if ((productions[i])[0])[0] in assoc:
                     if assoc[((productions[i])[0])[0]] <= key:
                         if assoc[product[i][0][0]] >= key:
@@ -384,6 +354,9 @@ class ContextFreeGrammar:
                     product_aux.remove(productions[i][:])
 
             if need_change:
+
+                self.productions[self.number_state[key]] = [x for x in self.productions[self.number_state[key]] if x]
+
                 new_nt = self.get_new_state()
 
                 if assoc[nt] >= key:
@@ -392,18 +365,26 @@ class ContextFreeGrammar:
 
                     new_product = []
                     for i in to_remove:
-
+                        print(self.productions)
                         if [i[0]] in self.productions[nt]:
                             self.productions[nt].remove([i[0]])
-                        i[0] = i[0][1:]
 
+                        print(i)
+                        i[0] = i[0][1:]
+                        print(i)
                         new_product.append(i)
 
-                        # print(nt)
-                        # product_aux.remove(i)
+
                     new_product.append(['&'])
-                    # print("ANTES> ", self.productions[new_nt])
+
+                    self.non_terminals |= set(new_nt)
                     self.productions[new_nt] = new_product
+
+                    product_list = self.prepair_recursion()
+                    self.productions[self.number_state[key]] = [x for x in self.productions[self.number_state[key]] if x]
+                    assoc = self.create_association()
+
+
 
     def number_of_keys(self, dict):
 
@@ -496,19 +477,51 @@ class ContextFreeGrammar:
     def factor(self):
         # self.left_recursion()
         iterations = 0
-        while iterations < ContextFreeGrammar.__MAX_FACTOR:
-            # length = self.number_derivation()
-            # for _ in range(1):
-            self.eliminate_direct_non_determinism()
-            self.eliminate_indirect_non_determinism()
-            iterations += 1
+        productions = self.prepair_recursion()
+        assoc = self.create_association()
+
+        for i in range(1, len(self.productions)+1):
+            print("ESTOY PASNSANDO: ", [i])
+            print(self.productions)
+            self.new_remove_direct_nom_determinism(productions[i], self.number_state[i])
+            print(self.productions)
+        for i in range(1, len(self.productions)+1):
+            print("ESTOY PASNSANDO: ", [i])
+            print(self.productions)
+            self.new_remove_direct_nom_determinism(productions[i], self.number_state[i])
+            print(self.productions)
+
+        for i in range (2):
+            for i in range(1, len(self.productions) + 1):
+                print("ESTOY PASNSANDO: ", [i])
+                print(self.productions)
+                self.new_remove_direct_nom_determinism(productions[i], self.number_state[i])
+                print(self.productions)
+
+
+        print("============")
+        print(self.productions)
+        print(assoc)
+        print(productions)
+        print("============")
+
+        print(self)
+
+        # while iterations < ContextFreeGrammar.__MAX_FACTOR:
+        #     # length = self.number_derivation()
+        #     # for _ in range(1):
+        #
+        #     print(self)
+        #     self.new_remove_direct_nom_determinism()
+            # self.eliminate_indirect_non_determinism()
+        # iterations += 1
 
     def eliminate_direct_non_determinism(self):
         variables = list(self.non_terminals)
         for variable in variables:
             derivations = list(self.productions[variable])
             derivation_to_change = {}
-            print(derivations)
+            # print(derivations)
             # print(derivation_to_change)
             for derivation in derivations:
                 head = derivation[0]
@@ -516,15 +529,15 @@ class ContextFreeGrammar:
                 if head not in derivation_to_change:
                     derivation_to_change[head] = []
                 derivation_to_change[head].append(tail)
-                print(derivation_to_change)
+                # print(derivation_to_change)
 
             for head, tails in derivation_to_change.items():
                 already_added = False
                 if len(tails) == 1:
-                    print("entrou")
+                    # print("entrou")
                     continue
                 else:
-                    print("entrou")
+                    # print("entrou")
                     productions_new_state = list()
                     new_state = self.get_new_state()
                     self.non_terminals |= {new_state}
@@ -565,6 +578,60 @@ class ContextFreeGrammar:
                             new_derivation = subderivation + tail
                         if new_derivation not in self.dictionary[variable]:
                             self.dictionary[variable].append(new_derivation)
+    def new_remove_direct_nom_determinism(self, productions, non_terminal):
+        # print("???", productions)
+
+        # print(productions)
+
+
+        if len(productions) < 2:
+            return
+
+        for i in range(len(productions)):
+            print("Comecei")
+            to_remove = []
+
+            need_change = False
+
+            print(productions)
+            print(self.productions)
+            # print(productions[i][0])
+            print(productions[i][0][0])
+            if productions[i][0][0] in self.terminals:
+                print("ADENTREI: " , self.productions)
+                to_check = productions[i][0][0]
+                for i in range(len(productions)):
+                    if productions[i][0][0] == to_check:
+                        if productions[i][0] not in to_remove:
+                            to_remove.append(productions[i][0])
+                if len(to_remove) > 1:
+                    aux_productions = productions[:]
+
+                    for i in to_remove:
+                        aux_productions.remove([i])
+                    need_change = True
+
+                if need_change:
+                    new_state = self.get_new_state()
+                    self.non_terminals |= set(new_state)
+
+                    aux_productions.append([to_check+new_state])
+
+                    self.productions[non_terminal] = aux_productions
+
+                    for i in range(len(to_remove)):
+                        to_remove[i] = to_remove[i][1:]
+
+                    self.productions[new_state] = to_remove
+                    self.create_association()
+                    self.prepair_recursion()
+                    self.productions[non_terminal] = aux_productions
+                    print("FIZ: ", self.productions)
+                    to_remove = []
+                    to_check = []
+                    need_change = False
+                break
+
 
     def __is_variable(self, character):
         return character.isupper()

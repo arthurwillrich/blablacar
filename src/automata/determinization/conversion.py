@@ -1,5 +1,5 @@
 from src.automata.structures.fa import FiniteAutomata
-from src.automata.persistency.reader import read_fa_from
+from src.automata.persistency.reader import read_fa_from, new_read_fa_from
 from src import resource_dir
 from src.automata.structures.state import State
 
@@ -128,8 +128,29 @@ def __transitions_for(nfa, state: State) -> dict:
 
 
 if __name__ == '__main__':
-    stub = read_fa_from(resource_dir / 'stub.txt')
+    # stub = read_fa_from(resource_dir / 'stub.txt')
+    #
+    # print(stub)
+    # stub = determinize(stub)
 
-    print(stub)
-    stub = determinize(stub)
-    print(stub)
+
+    fa1 = new_read_fa_from('uniao1.txt')
+    # print(fa1.alphabet)
+
+    fa2 = new_read_fa_from('uniao2.txt')
+    # print(fa2)
+
+    # print(fa1)
+    # print(fa2)
+
+    # fa2 = determinize(fa2)
+
+    # print(fa2)
+
+    print(fa1 | fa2)
+    # write(fa1 | fa2)
+
+
+
+
+    # print(stub)

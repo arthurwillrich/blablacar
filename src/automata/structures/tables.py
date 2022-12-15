@@ -57,7 +57,7 @@ if __name__ == '__main__':
             place += 1
         else:
             index = tables.putST(word)
-            tables.putTL([word, "not reserved", index])
+            tables.putTL([word, "not reserved", index+1])
 
     print(st)
     print(tl)

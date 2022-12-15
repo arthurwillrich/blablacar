@@ -76,5 +76,5 @@ def __squash_into_state(nodes: set) -> State:
 
 
 if __name__ == '__main__':
-    fa2 = fa_from('b?(ab)*a?')
+    fa2 = fa_from('a?(a|b)+')
     print(fa2)

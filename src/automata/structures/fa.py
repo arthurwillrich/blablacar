@@ -50,6 +50,13 @@ class FiniteAutomata:
 
     def __or__(self, other):
         new_fa = FiniteAutomata()
+        self.initial_state.label += 'a'
+        other.initial_state.label += 'b'
+        for state in self.states:
+            state.label += 'a'
+
+        for state in other.states:
+            state.label += 'b'
 
         new_fa.states = self.states | other.states | {new_fa.initial_state}
         new_fa.final_states = self.final_states | other.final_states

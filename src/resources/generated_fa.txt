@@ -1,18 +1,40 @@
 #states
-0
-01
-03
-02
+r
+q4
+q1
+q2
+s
+p
+q3
+q0
+q
+q69511998
 #initial
-0
+q69511998
 #final
-03
+q3
+q1
+s
+q
 #transitions
-0 b -> 0
-0 a -> 01
-01 b -> 02
-01 a -> 01
-02 b -> 03
-02 a -> 01
-03 b -> 0
-03 a -> 01
+p 0 -> p q
+q 0 -> r
+q 1 -> r q
+r 0 -> s
+r 1 -> p
+s 0 -> q
+s 1 -> p
+p & -> q
+r & -> q
+s & -> p q
+q0 a -> q1
+q0 b -> q3
+q1 a -> q1
+q1 b -> q2
+q2 a -> q1
+q2 b -> q2
+q3 a -> q4
+q3 b -> q3
+q4 a -> q4
+q4 b -> q3
+q69511998 & -> p q0
