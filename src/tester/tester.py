@@ -25,9 +25,7 @@ if __name__ == '__main__':
                       '1' - PARTE 1
                       'rec' - recursão
                       'fat' - fatoração
-                      'tab' - gerar tabela
-                      'anl' - analisar entrada 
-                      'ffg' - calcular first e follows
+                      'll1' - calcular first follow e fazer analise
                       
                       """)
 
@@ -81,11 +79,9 @@ if __name__ == '__main__':
             print("============= FATORACAO =============")
             grammar1.factor()
 
-        elif parte == 'ffg':
+        elif parte == 'll1':
             read_grammar = new_read_grammar_from('prova.txt')
             analysisTable = AnalysisTableContrcutor(read_grammar)
-
-
             produce_pretty_table(analysisTable, "cvfm;be;be")
 
         elif parte == 'fim':
